@@ -1,0 +1,30 @@
+.board-wrapper {
+  height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.board {
+  border: .5px solid #fff;
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cell {
+  height: min(7vw, 5vh);
+  width: min(7vw, 5vh);
+  border: .5px solid #fff;
+}
+
+.red {
+  background-color: red;
+}
+
+.green {
+  background-color: green;
+}
