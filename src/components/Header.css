@@ -3,5 +3,14 @@
   justify-content: center;
   align-items: center;
   height: 5vh;
-  border-bottom: 1px solid #fff;
+  border-bottom: 1px solid red;
+  font-weight: bold;
+}
+
+.green {
+  color: rgb(28, 201, 135);
+}
+
+.blue {
+  color: rgb(17, 190, 221);
 }

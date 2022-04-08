@@ -1,12 +1,13 @@
 .board-wrapper {
-  height: 80vh;
+  height: 70vh;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .board {
-  border: .5px solid #fff;
+  border-radius: min(1vw, 1vh);
+  overflow: hidden;
 }
 
 .row {
@@ -16,15 +17,45 @@
 }
 
 .cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   height: min(7vw, 5vh);
   width: min(7vw, 5vh);
-  border: .5px solid #fff;
 }
 
-.red {
-  background-color: red;
+.snake {
+  height: min(6vw, 4vh);
+  width: min(6vw, 4vh);
+  border-radius: min(1vw, 1vh);
+  background-color: rgb(17, 190, 221);
 }
 
-.green {
-  background-color: green;
+.head {
+  height: min(6vw, 4vh);
+  width: min(6vw, 4vh);
+  border-radius: min(1vw, 1vh);
+  background-color: rgb(28, 201, 135);
+}
+
+.apple {
+  height: min(6vw, 4vh);
+  width: min(6vw, 4vh);
+  background-color: rgb(255, 0, 0);
+  border-radius: min(2vw, 2vh);
+}
+
+.eaten-apple {
+  height: min(7vw, 5vh);
+  width: min(7vw, 5vh);
+  background-color: rgb(17, 190, 221);
+  border-radius: min(2vw, 2vh);
+}
+
+.light {
+  background-color: rgb(138, 138, 138);
+}
+
+.dark {
+  background-color: rgb(126, 126, 126);
 }

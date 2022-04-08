@@ -3,7 +3,7 @@ import './Header.css';
 function Board() {
   return (
     <div className="header">
-      Snake Game
+      <span className="green">Snake</span><span className="blue">Game</span>
     </div>
   );
 }

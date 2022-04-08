@@ -1,0 +1,16 @@
+.message-wrapper {
+  position: fixed;
+  top: 15vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.message {
+  padding: 10px;
+  background-color: rgb(197, 197, 197);
+  border-radius: 5px;
+  color: black;
+  font-weight: bold;
+}

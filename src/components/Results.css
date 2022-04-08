@@ -1,6 +1,7 @@
 .results {
-  height: 5vh;
+  height: 10vh;
+  font-size: 2rem;
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
 }
