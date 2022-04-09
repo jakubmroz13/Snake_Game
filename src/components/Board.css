@@ -48,7 +48,7 @@
 .eaten-apple {
   height: min(7vw, 5vh);
   width: min(7vw, 5vh);
-  background-color: rgb(17, 190, 221);
+  background-color: rgb(22, 195, 170);
   border-radius: min(2vw, 2vh);
 }
 

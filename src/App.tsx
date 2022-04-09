@@ -7,7 +7,12 @@ import Message from './components/Message';
 const BOARD_SIZE = 13;
 
 function App() {
-  const [message, setMessage] = useState('Press Spacebar to play');
+  let mobile = false;
+  if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){
+    mobile = true;
+  }
+  const [message, setMessage] = useState(mobile ? 'Touch screen to play' : 'Press Spacebar to play');
+  
 
   const [score, setScore] = useState(0);
   const [board, setBoard] = useState(createBoard(BOARD_SIZE));
@@ -36,7 +41,7 @@ function App() {
       playing = false;
       gameEnded = true;
       clearInterval(intervalID);
-      setMessage('Press Spacebar to play again');
+      setMessage(mobile ? 'Touch screen to play again': 'Press Spacebar to play again');
       return;
     }
 
@@ -67,26 +72,82 @@ function App() {
   const playGame = () => {
     const intervalID = setInterval(() => {
       moveSnake(intervalID);
-    }, 128);
+    }, mobile ? 150 : 110);
   }
 
   const handleKeyDown = () => {
-    document.addEventListener('keydown', (e) => {
-      if (e.code === 'ArrowUp' && direction.row !== 1) {
-        direction = { row: -1, col: 0 };
-      } else if (e.code === 'ArrowRight' && direction.col !== -1) {
-        direction = { row: 0, col: 1 };
-      } else if (e.code === 'ArrowDown' && direction.row !== -1) {
-        direction = { row: 1, col: 0 };
-      } else if (e.code === 'ArrowLeft' && direction.col !== 1) {
-        direction = { row: 0, col: -1 };
-      } else if (e.code === 'Space' && playing === false) {
+    let touchstart = {
+      x: 0,
+      y: 0,
+    };
+
+    let touchend = {
+      x: 0,
+      y: 0,
+    };
+
+    function handleGesture() {
+      if (touchstart.x === touchend.x && touchstart.y === touchend.y) {
         if (gameEnded) {
           window.location.reload();
         }
         playing = true;
         playGame();
         setMessage('');
+      }
+
+      if (!playing) return;
+      const deltaX = touchend.x - touchstart.x;
+      const deltaY = touchend.y - touchstart.y;
+
+      if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        if (deltaX > 0 && direction.col !== -1) {
+          //right
+          direction = { row: 0, col: 1 };
+        } else if (deltaX < 0 && direction.col !== 1) {
+          //left
+          direction = { row: 0, col: -1 };
+        }
+      } else {
+        if (deltaY > 0 && direction.row !== -1) {
+          //down
+          direction = { row: 1, col: 0 };
+        } else if (deltaY < 0 && direction.row !== 1) {
+          //up
+          direction = { row: -1, col: 0 };
+        }
+      }
+    }
+
+    document.addEventListener('touchstart', e => {
+      touchstart = { x: e.changedTouches[0].screenX, y: e.changedTouches[0].screenY };
+    })
+
+    document.addEventListener('touchend', e => {
+      touchend = { x: e.changedTouches[0].screenX, y: e.changedTouches[0].screenY };
+      handleGesture();
+    })
+
+    document.addEventListener('keydown', (e) => {
+      if (playing) {
+        if (e.code === 'ArrowUp' && direction.row !== 1) {
+          direction = { row: -1, col: 0 };
+        } else if (e.code === 'ArrowRight' && direction.col !== -1) {
+          direction = { row: 0, col: 1 };
+        } else if (e.code === 'ArrowDown' && direction.row !== -1) {
+          direction = { row: 1, col: 0 };
+        } else if (e.code === 'ArrowLeft' && direction.col !== 1) {
+          direction = { row: 0, col: -1 };
+        }
+      } else {
+        if (e.code === 'Space') {
+          if (gameEnded) {
+            window.location.reload();
+          }
+          playing = true;
+          playGame();
+          setMessage('');
+        }
       }
     });
   };
@@ -104,16 +165,16 @@ function App() {
 const createSnake = (n: number) => {
   return [
     {
-      row: Math.round(n / 2),
-      col: Math.round(n / 3),
+      row: Math.floor(n / 2),
+      col: Math.floor(n / 3),
     },
     {
-      row: Math.round(n / 2),
-      col: Math.round(n / 3 - 1),
+      row: Math.floor(n / 2),
+      col: Math.floor(n / 3 - 1),
     },
     {
-      row: Math.round(n / 2),
-      col: Math.round(n / 3 - 2),
+      row: Math.floor(n / 2),
+      col: Math.floor(n / 3 - 2),
     },
   ]
 };
@@ -142,8 +203,8 @@ const createBoard = (n: number) => {
 
 const createApple = (n: number) => {
   return {
-    row: Math.round(n / 2),
-    col: Math.round(n * 2 / 3),
+    row: Math.floor(n / 2),
+    col: Math.floor(n * 2 / 3),
   };
 }
 
