@@ -8,11 +8,11 @@ const BOARD_SIZE = 13;
 
 function App() {
   let mobile = false;
-  if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){
+  if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
     mobile = true;
   }
   const [message, setMessage] = useState(mobile ? 'Touch screen to play' : 'Press Spacebar to play');
-  
+
 
   const [score, setScore] = useState(0);
   const [board, setBoard] = useState(createBoard(BOARD_SIZE));
@@ -22,7 +22,7 @@ function App() {
     row: 0,
     col: 1,
   };
-  let playing = false;
+  let playing = 1;
   let gameEnded = false;
 
   useEffect(() => {
@@ -38,10 +38,10 @@ function App() {
     };
 
     if (boundCollision(newHead, BOARD_SIZE) || snakeBodyCollision(newHead, snake)) {
-      playing = false;
+      playing = 0;
       gameEnded = true;
       clearInterval(intervalID);
-      setMessage(mobile ? 'Touch screen to play again': 'Press Spacebar to play again');
+      setMessage(mobile ? 'Touch screen to play again' : 'Press Spacebar to play again');
       return;
     }
 
@@ -75,6 +75,32 @@ function App() {
     }, mobile ? 150 : 110);
   }
 
+  const handleGameOver = () => {
+    apple = createApple(BOARD_SIZE);
+    snake = createSnake(BOARD_SIZE);
+    for (let i = 0; i < BOARD_SIZE; i++) {
+      for (let j = 0; j < BOARD_SIZE; j++) {
+        if (i === snake[0].row && j === snake[0].col) {
+          board[i][j] = 3;
+        }
+        else if ((i === snake[1].row && j === snake[1].col) || (i === snake[2].row && j === snake[2].col)) {
+          board[i][j] = 1;
+        }
+        else if (apple.row === i && apple.col === j) {
+          board[i][j] = 2;
+        } else {
+          board[i][j] = 0;
+        }
+      }
+    }
+    setBoard([...board]);
+    direction = {
+      row: 0,
+      col: 1,
+    };
+    setScore(0);
+  };
+
   const handleKeyDown = () => {
     let touchstart = {
       x: 0,
@@ -86,50 +112,49 @@ function App() {
       y: 0,
     };
 
-    function handleGesture() {
-      if (touchstart.x === touchend.x && touchstart.y === touchend.y) {
-        if (gameEnded) {
-          window.location.reload();
-        }
-        playing = true;
-        playGame();
-        setMessage('');
-      }
-
-      if (!playing) return;
-      const deltaX = touchend.x - touchstart.x;
-      const deltaY = touchend.y - touchstart.y;
-
-      if (Math.abs(deltaX) > Math.abs(deltaY)) {
-        if (deltaX > 0 && direction.col !== -1) {
-          //right
-          direction = { row: 0, col: 1 };
-        } else if (deltaX < 0 && direction.col !== 1) {
-          //left
-          direction = { row: 0, col: -1 };
-        }
-      } else {
-        if (deltaY > 0 && direction.row !== -1) {
-          //down
-          direction = { row: 1, col: 0 };
-        } else if (deltaY < 0 && direction.row !== 1) {
-          //up
-          direction = { row: -1, col: 0 };
-        }
-      }
-    }
-
     document.addEventListener('touchstart', e => {
       touchstart = { x: e.changedTouches[0].screenX, y: e.changedTouches[0].screenY };
     })
 
     document.addEventListener('touchend', e => {
       touchend = { x: e.changedTouches[0].screenX, y: e.changedTouches[0].screenY };
-      handleGesture();
+      if (touchstart.x === touchend.x && touchstart.y === touchend.y) {
+        if (playing === 1) {
+          playing = 2;
+          playGame();
+          setMessage('');
+          return;
+        } else if (playing === 0) {
+          playing = 1;
+          handleGameOver();
+          return;
+        }
+      }
+      const deltaX = touchend.x - touchstart.x;
+      const deltaY = touchend.y - touchstart.y;
+      if (playing === 2) {
+        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+          if (deltaX > 0 && direction.col !== -1) {
+            //right
+            direction = { row: 0, col: 1 };
+          } else if (deltaX < 0 && direction.col !== 1) {
+            //left
+            direction = { row: 0, col: -1 };
+          }
+        } else {
+          if (deltaY > 0 && direction.row !== -1) {
+            //down
+            direction = { row: 1, col: 0 };
+          } else if (deltaY < 0 && direction.row !== 1) {
+            //up
+            direction = { row: -1, col: 0 };
+          }
+        }
+      }
     })
 
     document.addEventListener('keydown', (e) => {
-      if (playing) {
+      if (playing === 2) {
         if (e.code === 'ArrowUp' && direction.row !== 1) {
           direction = { row: -1, col: 0 };
         } else if (e.code === 'ArrowRight' && direction.col !== -1) {
@@ -139,15 +164,13 @@ function App() {
         } else if (e.code === 'ArrowLeft' && direction.col !== 1) {
           direction = { row: 0, col: -1 };
         }
-      } else {
-        if (e.code === 'Space') {
-          if (gameEnded) {
-            window.location.reload();
-          }
-          playing = true;
-          playGame();
-          setMessage('');
-        }
+      } else if (playing === 1 && e.code === 'Space') {
+        playing = 2;
+        playGame();
+        setMessage('');
+      } else if (playing === 0 && e.code === 'Space') {
+        playing = 1;
+        handleGameOver();
       }
     });
   };
